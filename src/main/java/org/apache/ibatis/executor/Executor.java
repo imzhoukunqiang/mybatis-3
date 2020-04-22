@@ -15,9 +15,6 @@
  */
 package org.apache.ibatis.executor;
 
-import java.sql.SQLException;
-import java.util.List;
-
 import org.apache.ibatis.cache.CacheKey;
 import org.apache.ibatis.cursor.Cursor;
 import org.apache.ibatis.mapping.BoundSql;
@@ -27,7 +24,17 @@ import org.apache.ibatis.session.ResultHandler;
 import org.apache.ibatis.session.RowBounds;
 import org.apache.ibatis.transaction.Transaction;
 
+import java.sql.SQLException;
+import java.util.List;
+
 /**
+ * 核心执行语句的执行器,以下三种为具体实现
+ * {@link BatchExecutor}
+ * {@link SimpleExecutor}
+ * {@link ReuseExecutor}
+ *
+ * {@link CachingExecutor}为装饰Executor，给真正的Executor增加缓存功能
+ *
  * @author Clinton Begin
  */
 public interface Executor {

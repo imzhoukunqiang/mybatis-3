@@ -15,15 +15,15 @@
  */
 package org.apache.ibatis.transaction.jdbc;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import javax.sql.DataSource;
-
 import org.apache.ibatis.logging.Log;
 import org.apache.ibatis.logging.LogFactory;
 import org.apache.ibatis.session.TransactionIsolationLevel;
 import org.apache.ibatis.transaction.Transaction;
 import org.apache.ibatis.transaction.TransactionException;
+
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
 
 /**
  * {@link Transaction} that makes use of the JDBC commit and rollback facilities directly.
@@ -32,6 +32,10 @@ import org.apache.ibatis.transaction.TransactionException;
  * Ignores commit or rollback requests when autocommit is on.
  *
  * @author Clinton Begin
+ *
+ * JdbcTransaction 使用JDBC默认的事务管理功能进行commit和rollback.
+ *
+ * 使用DataSource构造或者直接使用jdbc Connection构造.
  *
  * @see JdbcTransactionFactory
  */
@@ -58,6 +62,7 @@ public class JdbcTransaction implements Transaction {
   @Override
   public Connection getConnection() throws SQLException {
     if (connection == null) {
+      //使用DataSource构造时，connection可能为空，要先创建连接
       openConnection();
     }
     return connection;

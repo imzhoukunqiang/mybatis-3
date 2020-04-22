@@ -15,15 +15,18 @@
  */
 package org.apache.ibatis.transaction;
 
+import org.apache.ibatis.session.TransactionIsolationLevel;
+
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.util.Properties;
 
-import javax.sql.DataSource;
-
-import org.apache.ibatis.session.TransactionIsolationLevel;
-
 /**
  * Creates {@link Transaction} instances.
+ * Mybatis 的事务管理工厂接口。默认有两种实现。
+ *
+ * {@link org.apache.ibatis.transaction.jdbc.JdbcTransactionFactory}
+ * {@link org.apache.ibatis.transaction.managed.ManagedTransactionFactory}
  *
  * @author Clinton Begin
  */

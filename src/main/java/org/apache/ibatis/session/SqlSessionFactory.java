@@ -19,7 +19,9 @@ import java.sql.Connection;
 
 /**
  * Creates an {@link SqlSession} out of a connection or a DataSource
- * 
+ *
+ * Mybatis核心接口，SqlSessionFactory，用于创建SQLSession
+ * {@link org.apache.ibatis.session.defaults.DefaultSqlSessionFactory}
  * @author Clinton Begin
  */
 public interface SqlSessionFactory {

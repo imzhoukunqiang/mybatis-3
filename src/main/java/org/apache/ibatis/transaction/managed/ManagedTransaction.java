@@ -15,14 +15,14 @@
  */
 package org.apache.ibatis.transaction.managed;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import javax.sql.DataSource;
-
 import org.apache.ibatis.logging.Log;
 import org.apache.ibatis.logging.LogFactory;
 import org.apache.ibatis.session.TransactionIsolationLevel;
 import org.apache.ibatis.transaction.Transaction;
+
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
 
 /**
  * {@link Transaction} that lets the container manage the full lifecycle of the transaction.
@@ -32,6 +32,8 @@ import org.apache.ibatis.transaction.Transaction;
  *
  * @author Clinton Begin
  *
+ * ManagedTransaction用于不需要Mybatis管理事物时使用。
+ * commit和rollback均是空实现，让外部进行控制。
  * @see ManagedTransactionFactory
  */
 public class ManagedTransaction implements Transaction {

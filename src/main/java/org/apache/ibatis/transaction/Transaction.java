@@ -22,6 +22,12 @@ import java.sql.SQLException;
  * Wraps a database connection.
  * Handles the connection lifecycle that comprises: its creation, preparation, commit/rollback and close. 
  *
+ * Mybatis包装数据库连接的Transaction接口。主要实现有
+ * {@link org.apache.ibatis.transaction.jdbc.JdbcTransaction}
+ * {@link org.apache.ibatis.transaction.managed.ManagedTransaction}
+ *
+ * 使用{@link TransactionFactory}创建新的实例。
+ * Transaction 用来包装jdbc的commit和rollback功能
  * @author Clinton Begin
  */
 public interface Transaction {
