@@ -15,37 +15,20 @@
  */
 package org.apache.ibatis.builder.xml;
 
-import java.io.InputStream;
-import java.io.Reader;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-
-import org.apache.ibatis.builder.BaseBuilder;
-import org.apache.ibatis.builder.BuilderException;
-import org.apache.ibatis.builder.CacheRefResolver;
-import org.apache.ibatis.builder.IncompleteElementException;
-import org.apache.ibatis.builder.MapperBuilderAssistant;
-import org.apache.ibatis.builder.ResultMapResolver;
+import org.apache.ibatis.builder.*;
 import org.apache.ibatis.cache.Cache;
 import org.apache.ibatis.executor.ErrorContext;
 import org.apache.ibatis.io.Resources;
-import org.apache.ibatis.mapping.Discriminator;
-import org.apache.ibatis.mapping.ParameterMapping;
-import org.apache.ibatis.mapping.ParameterMode;
-import org.apache.ibatis.mapping.ResultFlag;
-import org.apache.ibatis.mapping.ResultMap;
-import org.apache.ibatis.mapping.ResultMapping;
+import org.apache.ibatis.mapping.*;
 import org.apache.ibatis.parsing.XNode;
 import org.apache.ibatis.parsing.XPathParser;
 import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.type.JdbcType;
 import org.apache.ibatis.type.TypeHandler;
+
+import java.io.InputStream;
+import java.io.Reader;
+import java.util.*;
 
 /**
  * @author Clinton Begin
@@ -91,7 +74,7 @@ public class XMLMapperBuilder extends BaseBuilder {
     if (!configuration.isResourceLoaded(resource)) {
       configurationElement(parser.evalNode("/mapper"));
       configuration.addLoadedResource(resource);
-      bindMapperForNamespace();
+      bindMapperForNamespace();//解析NameSpace，并将对于的Mapper绑定到mapperRegistry中
     }
 
     parsePendingResultMaps();
@@ -103,19 +86,19 @@ public class XMLMapperBuilder extends BaseBuilder {
     return sqlFragments.get(refid);
   }
 
-  private void configurationElement(XNode context) {
+  private void configurationElement(XNode context) {//解析xml核心方法，namespace、cache、parameterMap、resultMap、sql、select|insert|update|delete
     try {
       String namespace = context.getStringAttribute("namespace");
       if (namespace == null || namespace.equals("")) {
         throw new BuilderException("Mapper's namespace cannot be empty");
       }
       builderAssistant.setCurrentNamespace(namespace);
-      cacheRefElement(context.evalNode("cache-ref"));
-      cacheElement(context.evalNode("cache"));
-      parameterMapElement(context.evalNodes("/mapper/parameterMap"));
-      resultMapElements(context.evalNodes("/mapper/resultMap"));
-      sqlElement(context.evalNodes("/mapper/sql"));
-      buildStatementFromContext(context.evalNodes("select|insert|update|delete"));
+      cacheRefElement(context.evalNode("cache-ref"));//cache-ref 用于表示使用另外一个namespace的cache
+      cacheElement(context.evalNode("cache"));//default:[type = PERPETUAL , eviction = LRU , flushInterval = null , size = null , readOnly = false , blocking = false]
+      parameterMapElement(context.evalNodes("/mapper/parameterMap"));//这个已经弃用
+      resultMapElements(context.evalNodes("/mapper/resultMap"));//解析创建ResultMap
+      sqlElement(context.evalNodes("/mapper/sql"));//解析创建sql块
+      buildStatementFromContext(context.evalNodes("select|insert|update|delete"));//解析语句，同时将<include>sql块解析到语句中，select|insert|update|delete
     } catch (Exception e) {
       throw new BuilderException("Error parsing Mapper XML. The XML location is '" + resource + "'. Cause: " + e, e);
     }
@@ -190,7 +173,7 @@ public class XMLMapperBuilder extends BaseBuilder {
       CacheRefResolver cacheRefResolver = new CacheRefResolver(builderAssistant, context.getStringAttribute("namespace"));
       try {
         cacheRefResolver.resolveCacheRef();
-      } catch (IncompleteElementException e) {
+      } catch (IncompleteElementException e) {//cache还未生成，先放进IncompleteCacheRef，后续再来完成 // TODO: 2020/4/26 15:50
         configuration.addIncompleteCacheRef(cacheRefResolver);
       }
     }
