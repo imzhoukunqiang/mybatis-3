@@ -173,7 +173,7 @@ public class XMLMapperBuilder extends BaseBuilder {
       CacheRefResolver cacheRefResolver = new CacheRefResolver(builderAssistant, context.getStringAttribute("namespace"));
       try {
         cacheRefResolver.resolveCacheRef();
-      } catch (IncompleteElementException e) {//cache还未生成，先放进IncompleteCacheRef，后续再来完成 // TODO: 2020/4/26 15:50
+      } catch (IncompleteElementException e) {//cache还未生成，先放进IncompleteCacheRef，后续再来完成 参考org.apache.ibatis.builder.xml.XMLMapperBuilder.parsePendingCacheRefs
         configuration.addIncompleteCacheRef(cacheRefResolver);
       }
     }
@@ -190,7 +190,7 @@ public class XMLMapperBuilder extends BaseBuilder {
       boolean readWrite = !context.getBooleanAttribute("readOnly", false);
       boolean blocking = context.getBooleanAttribute("blocking", false);
       Properties props = context.getChildrenAsProperties();
-      builderAssistant.useNewCache(typeClass, evictionClass, flushInterval, size, readWrite, blocking, props);
+      builderAssistant.useNewCache(typeClass, evictionClass, flushInterval, size, readWrite, blocking, props);//创建新的cache 放到configuration中
     }
   }
 
@@ -265,7 +265,7 @@ public class XMLMapperBuilder extends BaseBuilder {
     }
     ResultMapResolver resultMapResolver = new ResultMapResolver(builderAssistant, id, typeClass, extend, discriminator, resultMappings, autoMapping);
     try {
-      return resultMapResolver.resolve();
+      return resultMapResolver.resolve();//其实相当于Function，把逻辑装到这个Resolver里，如果失败了，放进incomplete的map中，待后续complete
     } catch (IncompleteElementException  e) {
       configuration.addIncompleteResultMap(resultMapResolver);
       throw e;
@@ -310,7 +310,7 @@ public class XMLMapperBuilder extends BaseBuilder {
   }
 
   private void sqlElement(List<XNode> list, String requiredDatabaseId) throws Exception {
-    for (XNode context : list) {
+    for (XNode context : list) {//sql块比较简单，只是解析出来放到map中，之后解析insert、delete、update、select会将Node插入到对应的地方
       String databaseId = context.getStringAttribute("databaseId");
       String id = context.getStringAttribute("id");
       id = builderAssistant.applyCurrentNamespace(id, false);

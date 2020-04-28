@@ -15,10 +15,6 @@
  */
 package org.apache.ibatis.builder.xml;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
-
 import org.apache.ibatis.builder.BuilderException;
 import org.apache.ibatis.builder.IncompleteElementException;
 import org.apache.ibatis.builder.MapperBuilderAssistant;
@@ -28,6 +24,10 @@ import org.apache.ibatis.session.Configuration;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
 
 /**
  * @author Frank D. Martinez [mnesarco]
@@ -58,9 +58,9 @@ public class XMLIncludeTransformer {
    */
   private void applyIncludes(Node source, final Properties variablesContext, boolean included) {
     if (source.getNodeName().equals("include")) {
-      Node toInclude = findSqlFragment(getStringAttribute(source, "refid"), variablesContext);
+      Node toInclude = findSqlFragment(getStringAttribute(source, "refid"), variablesContext);//这里将include标签解析出来，找到对应的sql块，如果找不到则会抛出异常
       Properties toIncludeContext = getVariablesContext(source, variablesContext);
-      applyIncludes(toInclude, toIncludeContext, true);
+      applyIncludes(toInclude, toIncludeContext, true);//递归resolve、include，意味着sql标签中也可以使用include
       if (toInclude.getOwnerDocument() != source.getOwnerDocument()) {
         toInclude = source.getOwnerDocument().importNode(toInclude, true);
       }

@@ -15,11 +15,6 @@
  */
 package org.apache.ibatis.builder;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.regex.Pattern;
-
 import org.apache.ibatis.mapping.ParameterMode;
 import org.apache.ibatis.mapping.ResultSetType;
 import org.apache.ibatis.session.Configuration;
@@ -28,7 +23,16 @@ import org.apache.ibatis.type.TypeAliasRegistry;
 import org.apache.ibatis.type.TypeHandler;
 import org.apache.ibatis.type.TypeHandlerRegistry;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.regex.Pattern;
+
 /**
+ * {@link org.apache.ibatis.builder.annotation.MapperAnnotationBuilder}
+ * {@link org.apache.ibatis.builder.xml.XMLMapperBuilder}
+ * 等builder的父类，存放configuration、typeAliasRegistry、typeHandlerRegistry
+ * 还有一些公共方法
  * @author Clinton Begin
  */
 public abstract class BaseBuilder {

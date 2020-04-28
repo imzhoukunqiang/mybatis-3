@@ -84,23 +84,23 @@ public class XMLStatementBuilder extends BaseBuilder {
 
     // Include Fragments before parsing
     XMLIncludeTransformer includeParser = new XMLIncludeTransformer(configuration, builderAssistant);
-    includeParser.applyIncludes(context.getNode());
+    includeParser.applyIncludes(context.getNode());//解析include
 
     // Parse selectKey after includes and remove them.
-    processSelectKeyNodes(id, parameterTypeClass, langDriver);
+    processSelectKeyNodes(id, parameterTypeClass, langDriver);//解析selectKey标签
     
     // Parse the SQL (pre: <selectKey> and <include> were parsed and removed)
-    SqlSource sqlSource = langDriver.createSqlSource(configuration, context, parameterTypeClass);
+    SqlSource sqlSource = langDriver.createSqlSource(configuration, context, parameterTypeClass);//把sql解析到sqlNode中
     String resultSets = context.getStringAttribute("resultSets");
     String keyProperty = context.getStringAttribute("keyProperty");
     String keyColumn = context.getStringAttribute("keyColumn");
     KeyGenerator keyGenerator;
     String keyStatementId = id + SelectKeyGenerator.SELECT_KEY_SUFFIX;
     keyStatementId = builderAssistant.applyCurrentNamespace(keyStatementId, true);
-    if (configuration.hasKeyGenerator(keyStatementId)) {
+    if (configuration.hasKeyGenerator(keyStatementId)) {//如果有selectKey标签，优先用标签里面的
       keyGenerator = configuration.getKeyGenerator(keyStatementId);
     } else {
-      keyGenerator = context.getBooleanAttribute("useGeneratedKeys",
+      keyGenerator = context.getBooleanAttribute("useGeneratedKeys",//否则使用useGeneratedKeys，如果还未空，则用全局配置
           configuration.isUseGeneratedKeys() && SqlCommandType.INSERT.equals(sqlCommandType))
           ? Jdbc3KeyGenerator.INSTANCE : NoKeyGenerator.INSTANCE;
     }
@@ -125,7 +125,7 @@ public class XMLStatementBuilder extends BaseBuilder {
       String id = parentId + SelectKeyGenerator.SELECT_KEY_SUFFIX;
       String databaseId = nodeToHandle.getStringAttribute("databaseId");
       if (databaseIdMatchesCurrent(id, databaseId, skRequiredDatabaseId)) {
-        parseSelectKeyNode(id, nodeToHandle, parameterTypeClass, langDriver, databaseId);
+        parseSelectKeyNode(id, nodeToHandle, parameterTypeClass, langDriver, databaseId);//创建selectKey语句，并绑定到该语句上
       }
     }
   }
